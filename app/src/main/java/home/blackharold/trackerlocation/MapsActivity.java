@@ -8,15 +8,17 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.view.WindowManager;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -26,6 +28,7 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    //map
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LatLng latLng;
@@ -33,16 +36,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker marker;
     private float zoom = 15.0f;
 
+    //permissions
     private final String[] INITIAL_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int INITIAL_REQUEST = 10;
     private final int MIN_TIME = 1000 * 10;
 
+    //power
+    private PowerManager.WakeLock wakeLock;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        //flag for keepin screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -72,9 +84,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        zoom = 12.0f;
                     }
 
-                        marker = mMap.addMarker(new MarkerOptions().position(latLng).title(locality));
+                    marker = mMap.addMarker(new MarkerOptions().position(latLng).title(locality).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 //                        mMap.setMaxZoomPreference(20f);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -104,6 +116,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(60.04992,30.72156),zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(60.04992, 30.72156), zoom));
     }
 }
