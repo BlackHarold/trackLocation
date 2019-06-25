@@ -46,10 +46,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //power
     private PowerManager.WakeLock wakeLock;
 
+    //sending messages
+    private EventSender eventSender;
+    private Object[] objects;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        //Initial class, EventSender
 
         //flag for keepin screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -73,6 +79,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(Location location) {
                 //Initial class, LatLng
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                //Sending event
+                objects = new Object[]{latLng};
+                eventSender = new EventSender(latLng);
+                eventSender.apiCall();
 
                 Geocoder geocoder = new Geocoder(getApplicationContext());
                 try {
@@ -81,12 +91,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     if (marker != null) {
                         marker.remove();
-//                        zoom = 12.0f;
                     }
 
                     marker = mMap.addMarker(new MarkerOptions().position(latLng).title(locality).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 //                        mMap.setMaxZoomPreference(20f);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -110,7 +119,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, 0, locationListener);
         }
-
     }
 
     @Override
