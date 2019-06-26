@@ -29,6 +29,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LatLng latLng;
+    //TODO here initialize locality for title marker
     private String locality;
     private Marker marker;
     private float zoom = 15.0f;
@@ -78,13 +79,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (marker != null) {
                     marker.remove();
-//                        zoom = 12.0f;
                 }
-
                 marker = mMap.addMarker(new MarkerOptions().position(latLng).title(locality).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-//                        mMap.setMaxZoomPreference(20f);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
             }
 
             @Override
@@ -105,7 +102,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, 0, locationListener);
         }
-
     }
 
     @Override

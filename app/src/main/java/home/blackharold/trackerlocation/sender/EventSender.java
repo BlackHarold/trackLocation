@@ -10,7 +10,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class EventSender extends Fragment {
@@ -39,18 +38,28 @@ class AsyncClass extends AsyncTask {
 
     @Override
     protected Object doInBackground(Object... objects) {
+        String address, lat, lot, gmapUrl, date, result;
+        StringBuilder builder = new StringBuilder();
+        address = "https://dweet.io/dweet/for/tracker-gps-blackharold?";
+        lat = "latitude=" + latitude;
+        lot = "&longitude=" + longitude;
+        gmapUrl = "&url=https://www.google.ru/maps/search/" + latitude + ",+" + longitude + "/@" + latitude + "," + longitude + ",15z";
 
-        Date date = new Date();
+        result = builder
+                .append(address)
+                .append(lat)
+                .append(lot)
+                .append(gmapUrl)
+                .toString();
+        Log.i(TAG, result);
 
         try {
-            TimeUnit.SECONDS.sleep(30);
-//            URL sendUrl = new URL("https://dweet.io/dweet/for/tracker-gps-blackharold?latitude=" + latitude + "&longitude=" + longitude);
-            URL urlWithGoogleMap = new URL("https://dweet.io/dweet/for/tracker-gps-blackharold?latitude="+latitude+"&longitude="+longitude+"&url=https://www.google.ru/maps/search/"
-                    +latitude+",+"+longitude+"/@"+latitude+","+longitude+",15z");
+            TimeUnit.SECONDS.sleep(5);
+            URL urlWithGoogleMap = new URL(result);
             HttpURLConnection httpURLConnection = (HttpURLConnection) urlWithGoogleMap.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.connect();
-            Log.i(TAG, "Sending is O.K., status is " + httpURLConnection.getResponseCode() + ", " + date.toString());
+            Log.i(TAG, "Sending is O.K., status is " + httpURLConnection.getResponseCode());
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Send failed");
             e.printStackTrace();
