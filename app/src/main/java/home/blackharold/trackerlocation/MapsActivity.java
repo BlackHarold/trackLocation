@@ -2,8 +2,6 @@ package home.blackharold.trackerlocation;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,8 +21,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
-import java.util.List;
+import home.blackharold.trackerlocation.sender.EventSender;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -43,6 +40,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int INITIAL_REQUEST = 10;
     private final int MIN_TIME = 1000 * 10;
 
+    //sending data
+    private EventSender eventSender;
+
     //power
     private PowerManager.WakeLock wakeLock;
 
@@ -59,8 +59,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
         if (checkSelfPermission(
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(
@@ -73,24 +73,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(Location location) {
                 //Initial class, LatLng
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                eventSender = new EventSender(latLng);
+                eventSender.apiCall();
 
-                Geocoder geocoder = new Geocoder(getApplicationContext());
-                try {
-                    List<Address> addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                    locality = addressList.get(0).getLocality();
-
-                    if (marker != null) {
-                        marker.remove();
+                if (marker != null) {
+                    marker.remove();
 //                        zoom = 12.0f;
-                    }
-
-                    marker = mMap.addMarker(new MarkerOptions().position(latLng).title(locality).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-//                        mMap.setMaxZoomPreference(20f);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+
+                marker = mMap.addMarker(new MarkerOptions().position(latLng).title(locality).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//                        mMap.setMaxZoomPreference(20f);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
             }
 
             @Override
@@ -105,6 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onProviderDisabled(String provider) {
             }
         };
+
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, 0, locationListener);
         } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {

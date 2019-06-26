@@ -25,6 +25,5 @@ gradlew
 
 gradlew\.bat
 
-app/src/debug/res/values/google_maps_api\.xml
-
+app/src/debug/
 app/src/androidTest/
