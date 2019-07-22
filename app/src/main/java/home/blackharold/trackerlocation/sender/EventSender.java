@@ -14,13 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EventSender extends Fragment {
 
-    private LatLng latLng;
-
-    public EventSender(LatLng latLng) {
-        this.latLng = latLng;
-    }
-
-    public void apiCall() {
+    public void apiCall(LatLng latLng) {
         new AsyncClass(latLng).execute();
     }
 }
@@ -28,7 +22,7 @@ public class EventSender extends Fragment {
 class AsyncClass extends AsyncTask {
     private final String CHARSET = "UTF-8";
 
-    private final String TAG = "TrackerTag";
+    private final String TAG = "TRACKER_TAG";
     private float latitude, longitude;
 
     public AsyncClass(LatLng latLng) {
@@ -54,7 +48,7 @@ class AsyncClass extends AsyncTask {
         Log.i(TAG, result);
 
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
             URL urlWithGoogleMap = new URL(result);
             HttpURLConnection httpURLConnection = (HttpURLConnection) urlWithGoogleMap.openConnection();
             httpURLConnection.setRequestMethod("GET");

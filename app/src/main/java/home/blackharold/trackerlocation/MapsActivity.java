@@ -52,15 +52,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        //flag for keepin screen on
+        //flag for keeping screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (checkSelfPermission(
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -74,8 +72,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(Location location) {
                 //Initial class, LatLng
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                eventSender = new EventSender(latLng);
-                eventSender.apiCall();
+                eventSender = new EventSender();
+                eventSender.apiCall(latLng);
 
                 if (marker != null) {
                     marker.remove();
@@ -97,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
 
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, 0, locationListener);
         } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
